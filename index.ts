@@ -1,13 +1,13 @@
-const { create, Client } = require('@open-wa/wa-automate')
-const { color, messageLog } = require('./utils')
-const msgHandler = require('./handler/message')
+import { create, Client } from '@open-wa/wa-automate';
+import { color, messageLog } from './utils';
+import msgHandler from './handler/message';
 
-const start = (client = new Client()) => {
+const start = (client = new Client(void 0, void 0, void 0)) => {
     console.log('[DEV]', color('Red Emperor', 'yellow'))
     console.log('[CLIENT] CLIENT Started!')
 
     // Message log for analytic
-    client.onAnyMessage((fn) => messageLog(fn.fromMe, fn.type))
+    //client.onAnyMessage((fn) => messageLog(fn.fromMe, fn.type))
 
     // Force it to keep the current session
     client.onStateChanged((state) => {
@@ -16,7 +16,7 @@ const start = (client = new Client()) => {
     })
 
     // listening on message
-    client.onMessage((message) => {
+    client.onAnyMessage((message) => {
         // Cut message Cache if cache more than 3K
         client.getAmountOfLoadedMessages().then((msg) => (msg >= 3000) && client.cutMsgCache())
         // Message Handler
@@ -29,11 +29,11 @@ const start = (client = new Client()) => {
             .then((ids) => {
                 console.log('[CLIENT]', color(`Invited to Group. [ ${name} => ${ids.length}]`, 'yellow'))
                 // conditions if the group members are less than 10 then the bot will leave the group
-                if (ids.length <= 10) {
+/*                 if (ids.length <= 10) {
                     client.sendText(id, 'Sorry, the minimum group member is 10 user to use this bot. Bye~').then(() => client.leaveGroup(id))
                 } else {
                     client.sendText(id, `Hello group members *${name}*, thank you for inviting this bot, to see the bot menu send *#menu*`)
-                }
+                } */
             }))
 
     // listen paricipant event on group (wellcome message)
@@ -49,7 +49,7 @@ const start = (client = new Client()) => {
 
 const options = {
     sessionId: 'Imperial',
-    headless: true,
+    headless: false,
     qrTimeout: 0,
     authTimeout: 0,
     restartOnCrash: start,
